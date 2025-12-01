@@ -9,33 +9,27 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-  min-height: 100vh;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: url("IMG_3264.jpeg") center/cover no-repeat;
-  background-attachment: scroll;
-  overflow: hidden;
-  color: #fff;
-}
-
-@media (max-width: 768px) {
-  body {
-    background-attachment: scroll !important;
-    background-size: cover !important;
-    background-position: center !important;
-  }
-}
-
-
-
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: url("IMG_3264.jpeg") center/cover no-repeat;
+      background-attachment: scroll;
       overflow: hidden;
-      position: relative;
       color: #fff;
+      position: relative;
     }
 
-    /* PEMBE GLOW FON */
+    @media (max-width: 768px) {
+      body {
+        background-attachment: scroll !important;
+        background-size: cover !important;
+        background-position: center !important;
+      }
+    }
+
+    /* Glow */
     .pink-glow {
       position: fixed;
       width: 100%;
@@ -86,7 +80,6 @@
       width: 60px;
       height: 60px;
       border-radius: 50%;
-      background: pink;
       background: radial-gradient(circle at 30% 20%, #fff, #ff3fa8);
       margin: 0 auto 18px;
       display: flex;
@@ -138,11 +131,6 @@
       border: 1px solid #fff;
     }
 
-    button:hover {
-      transform: scale(1.07);
-      box-shadow: 0 0 18px pink;
-    }
-
     .result {
       margin-top: 16px;
       font-size: 16px;
@@ -158,7 +146,7 @@
       transform: translateY(0);
     }
 
-    /* KALP YAĞMURU */
+    /* Kalp yağmuru */
     .heartRain {
       position: fixed;
       top: -10%;
@@ -176,10 +164,36 @@
       }
     }
 
+    /* YES pulse */
+    @keyframes pulseYes {
+      0% { transform: scale(1.3); }
+      100% { transform: scale(1.45); }
+    }
+
+    /* Shake */
+    @keyframes shake {
+      0% { transform: translate(0px, 0px); }
+      25% { transform: translate(4px, -4px); }
+      50% { transform: translate(-4px, 4px); }
+      75% { transform: translate(4px, 4px); }
+      100% { transform: translate(0px, 0px); }
+    }
+
   </style>
 </head>
 
 <body>
+
+<!-- FIREWORKS ALANI -->
+<div id="fireworks" style="
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+"></div>
 
 <div class="pink-glow"></div>
 
@@ -198,12 +212,15 @@
   <div id="result" class="result"></div>
 </div>
 
+<!-- Fireworks JS -->
+<script src="https://cdn.jsdelivr.net/npm/fireworks-js@2/dist/fireworks.js"></script>
+
 <script>
   const yesBtn = document.getElementById("yesBtn");
   const noBtn = document.getElementById("noBtn");
   const resultEl = document.getElementById("result");
 
-  // KALP YAĞMURU
+  // Kalp yağmuru
   function createHeart() {
     const h = document.createElement("div");
     h.classList.add("heartRain");
@@ -213,10 +230,9 @@
     document.body.appendChild(h);
     setTimeout(() => h.remove(), 6000);
   }
-
   setInterval(createHeart, 150);
 
-  // TIKLAYINCA KALP SIÇRAMA
+  // Tık kalp sıçrama
   document.addEventListener("click", (e) => {
     const clickHeart = document.createElement("div");
     clickHeart.innerHTML = "💗";
@@ -230,33 +246,58 @@
     setTimeout(() => clickHeart.remove(), 1200);
   });
 
+  // EVET tuşu → havai fişek + konfeti + shake
   yesBtn.addEventListener("click", () => {
+
+    // Yazı
     resultEl.classList.add("show");
     resultEl.innerHTML = "Artık resmen sevgiliyiz Irmak! 💖✨<br>Arda + Irmak = Sonsuzluk 💞";
+
     yesBtn.disabled = true;
     noBtn.disabled = true;
+
+    // Havai Fişek
+    const container = document.getElementById('fireworks');
+    const fireworks = new Fireworks.default(container, {
+      autoresize: true,
+      opacity: 0.6,
+      acceleration: 1.05,
+      friction: 0.97,
+      gravity: 1.5,
+      particles: 100,
+      traceLength: 5,
+      traceSpeed: 8,
+      explosion: 8,
+      intensity: 60,
+      hue: { min: 300, max: 360 },
+      rocketsPoint: { min: 0, max: 100 },
+    });
+    fireworks.start();
+
+    // Shake
+    document.body.style.animation = "shake 0.6s ease";
+    setTimeout(() => { document.body.style.animation = ""; }, 800);
+
+    // Konfeti efekti (kalpler)
+    for (let i = 0; i < 30; i++) {
+      setTimeout(() => createHeart(), i * 120);
+    }
   });
 
- noBtn.addEventListener("click", () => {
-    // Sonucu yaz
+  // Düşüneyim → Evet büyüsün
+  noBtn.addEventListener("click", () => {
     resultEl.classList.add("show");
     resultEl.innerHTML = "Düşünmene gerek yok bence… 😏💗";
 
-    // Hayır butonunu küçült + sil
     noBtn.style.transform = "scale(0.3)";
     noBtn.style.opacity = "0.2";
     noBtn.disabled = true;
 
-    // Evet butonunu dev gibi yap
     yesBtn.style.transform = "scale(1.4)";
     yesBtn.style.boxShadow = "0 0 35px #ff3fa8";
     yesBtn.style.animation = "pulseYes 0.6s infinite alternate";
-});
-
+  });
 </script>
 
 </body>
 </html>
-
-
-
